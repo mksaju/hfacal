@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,6 +97,11 @@
       animation: slideIn 0.5s ease-in-out;
     }
 
+    .result-line {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
     /* Height Scale */
     .height-scale {
       margin-top: 20px;
@@ -149,8 +154,8 @@
           <input type="number" class="form-control" id="age" placeholder="বয়স লিখুন">
         </div>
         <div class="mb-3">
-          <label for="childHeight" class="form-label">উচ্চতা (cm):</label>
-          <input type="number" class="form-control" id="childHeight" placeholder="উচ্চতা লিখুন">
+          <label for="heightIn" class="form-label">উচ্চতা (ইঞ্চি):</label>
+          <input type="number" class="form-control" id="heightIn" placeholder="ইঞ্চি লিখুন">
         </div>
         <button class="btn btn-primary" onclick="calculateHeightForAge()">ক্যালকুলেট করুন</button>
         <div class="result" id="heightForAgeResult"></div>
@@ -166,22 +171,27 @@
   <script>
     function calculateHeightForAge() {
       const age = parseFloat(document.getElementById('age').value);
-      const height = parseFloat(document.getElementById('childHeight').value);
+      const heightIn = parseFloat(document.getElementById('heightIn').value);
 
-      if (isNaN(age) || isNaN(height)) {
+      if (isNaN(age) || isNaN(heightIn)) {
         document.getElementById('heightForAgeResult').innerText = "সঠিক মান লিখুন।";
         return;
       }
 
-      const averageHeight = (age * 6) + 77; // Simple formula for average height
-      let result = "";
+      // ইঞ্চিকে সেন্টিমিটারে রূপান্তর
+      const heightCm = heightIn * 2.54;
 
-      if (height < averageHeight - 5) {
-        result = "গড় উচ্চতার চেয়ে কম (Below Average Height)";
-      } else if (height >= averageHeight - 5 && height <= averageHeight + 5) {
-        result = "গড় উচ্চতা (Average Height)";
+      // গড় উচ্চতা গণনা (সাধারণ সূত্র: গড় উচ্চতা = (বয়স * 6) + 77 cm)
+      const averageHeight = (age * 6) + 77;
+      const heightDifference = (heightCm - averageHeight).toFixed(1);
+
+      let result = "";
+      if (heightCm < averageHeight - 5) {
+        result = `গড় উচ্চতার চেয়ে কম (Below Average Height)। গড় উচ্চতা: ${averageHeight} cm, পার্থক্য: ${Math.abs(heightDifference)} cm কম।`;
+      } else if (heightCm >= averageHeight - 5 && heightCm <= averageHeight + 5) {
+        result = `গড় উচ্চতা (Average Height)। গড় উচ্চতা: ${averageHeight} cm।`;
       } else {
-        result = "গড় উচ্চতার চেয়ে বেশি (Above Average Height)";
+        result = `গড় উচ্চতার চেয়ে বেশি (Above Average Height)। গড় উচ্চতা: ${averageHeight} cm, পার্থক্য: ${heightDifference} cm বেশি।`;
       }
 
       document.getElementById('heightForAgeResult').innerText = `ফলাফল: ${result}`;
